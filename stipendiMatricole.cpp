@@ -1,113 +1,157 @@
-// file matricole.txt
-//  11485 Marius
-//  11486 Andrei
-//  11487 Marco
-// file straordinari
-//  11485 10
-//  11486 20
-//  11487 30
-// file stipendi
-//  11485 1000
-//  11486 2000
-//  11487 3000
-
 #include <iostream>
 #include <fstream>
-
+#include <string>
 using namespace std;
-
-void findNameByCod(string cod)
+string cerca(string nomefile, string cod)
 {
-    string nome = "";
-    // file matricole.txt
-    //  11485 Marius
-    //  11486 Andrei
-    //  11487 Marco
-
-    ifstream fileMatricole("matricola.txt");
-    if (fileMatricole.is_open())
+    string risultato = "";
+    ifstream fileAperto(nomefile);
+    if (fileAperto.is_open())
     {
-        cout << "File matricole.txt aperto correttamente" << endl;
         string line;
-        while (getline(fileMatricole, line))
+        while (getline(fileAperto, line))
         {
-            for(int i=0; i<6 ; i++)
+            for (int i = 0; i < 6; i++)
             {
-                if(line[i] != cod[i])
+                if (line[i] != cod[i])
                 {
                     break;
                 }
-                else if(i == 5)
+                else if (i == 4)
                 {
-                    //ho trovato, mi devo mettere il nome in nome
-                    // senza usare la funzione substr
+                    for (int w = 6; w < line.length(); w++)
+                    {   
+                        risultato += line[w];
+                    }
                 }
             }
         }
     }
     else
     {
-        cout << "Impossibile aprire il file matricole.txt" << endl;
+        std::cout << "Impossibile aprire il file .txt" << endl;
     }
-
-    cout << "La matricola: " << cod << " corrisponde al nome: " << nome << endl;
+    return risultato;
 }
 
+void findNameByCod(string cod)
+{
+    string risultato = cerca("matricola.txt", cod);
+    cout << "La matricola: " << cod << " corrisponde al nome: " << risultato << endl;
+}
 void findSalaryByCod(string cod)
 {
-    cout << "sono findSalaryByCod" << endl;
+    cout << "matricola: " << cod << " stipendio: " << cerca("stipendi.txt", cod) << endl;
 }
 
-void findSalaryByName(string name)
+void findStraordinaryByCod(string cod)
 {
-    cout << "sono findSalaryByName" << endl;
+    cout << "matricola: " << cod << " straordinario: " << cerca("straordinari.txt", cod) << endl;
 }
 
+void findSalaryByName(string nome)
+
+{
+    ifstream fileAperto("matricola.txt");
+    string cod = "";
+    if (fileAperto.is_open())
+    {
+        string line;
+        while (getline(fileAperto, line))
+        {
+            int k=0;
+            for (int i = 6; i < line.length(); i++)
+            {
+                if (line[i] != nome[k])
+                {
+                    break;
+                }
+                else if (k == nome.length()-1)
+                {
+                    for (int j = 0; j < 5; j++)
+                    {
+                        cod += line[j];
+                    }
+                }
+                k++;
+            }
+        }
+    }
+    else
+    {
+        cout << "Impossibile aprire il file .txt" << endl;
+    }
+    string stipendioValore = cerca ("stipendi.txt", cod);
+    std::cout << "Il nome: " << nome << " corrisponde alla matricola: " << cod << " e al stipendio: " << stipendioValore << endl;
+}
+
+void findSalaryAndStraordinaryByCod(string cod)
+{
+    int stipendio = stoi(cerca("stipendi.txt", cod));
+    int straordinario = stoi(cerca("straordinari.txt", cod)) *35;
+    cout<<"La matricola: "<< cod << " guadagna: "<< stipendio + straordinario <<endl;
+
+}
 int main()
 {
-    cout << "Benvenuto nel programma di calcolo stipendi" << endl;
-
+    std::cout << "Benvenuto nel programma di calcolo stipendi" << endl;
     bool flag = true;
     while (flag)
     {
-        cout << "------------------------------------------------------" << endl;
-        cout << "Inserisci il numero della funzionalità che vuoi attivare" << endl;
-        cout << "1. Matricola -> Nome" << endl;
-        cout << "2. Matricola -> Stipendio" << endl;
-        cout << "3. Nome -> Stipendio" << endl;
+        std::cout << "Inserisci il numero della funzionalita che vuoi attivare" << endl;
+        std::cout << "1. Matricola -> Nome" << endl;
+        std::cout << "2. Matricola -> Stipendio" << endl;
+        std::cout << "3. Matricola -> Straordinari" << endl;
+        std::cout << "4. Nome -> Stipendio" << endl;
+        std::cout << "5. Matricola -> Stipendio + straordinari (35£/h)" << endl;
+        std::cout << "Inserisci quello che vuoi cercare" << endl;
+        cout << "inserisci 0 per uscire" << endl;
         int scelta;
         cin >> scelta;
-        cout << "Inserisci quello che vuoi cercare";
-        string input;
+        cout << "Cosa cerchi?" << endl;
+        string input = "";
         cin >> input;
 
-        if (scelta < 1 || scelta > 3)
+        if (scelta < 0 || scelta > 5)
         {
-            cout << "Scelta non valida" << endl;
+            std::cout << "Scelta non valida" << endl;
         }
         else
         {
             if (scelta == 1 && input.length() == 5)
             {
                 findNameByCod(input);
-                flag = false;
+                flag = true;
             }
             else if (scelta == 2 && input.length() == 5)
             {
                 findSalaryByCod(input);
-                flag = false;
+                flag = true;
             }
             else if (scelta == 3)
             {
+                findStraordinaryByCod(input);
+                flag = true;
+            }
+            else if (scelta == 4)
+            {
                 findSalaryByName(input);
+                flag = true;
+            }
+            else if (scelta == 5)
+            {
+                findSalaryAndStraordinaryByCod(input);
+                flag = true;
+            }
+            else if (scelta == 0)
+            {
                 flag = false;
             }
             else
             {
-                cout << "Scelta non valida" << endl;
+                std::cout << "Scelta non valida" << endl;
             }
         }
     }
-
-    cout << "Fine" << endl;
+    std::cout << "Fine" << endl;
 }
